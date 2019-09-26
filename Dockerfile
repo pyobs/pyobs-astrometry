@@ -10,7 +10,6 @@ WORKDIR /download
 RUN wget http://astrometry.net/downloads/astrometry.net-latest.tar.gz
 RUN tar xvzf astrometry.net-latest.tar.gz
 RUN cd astrometry.net-* && make && make py && make extra && make install PYTHON_SCRIPT="/usr/local/bin/python"
-#RUN /usr/local/astrometry/bin/solve-field
 
 FROM python:3.7-slim
 EXPOSE 8000
@@ -19,12 +18,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /usr/local/
 COPY --from=builder /usr/local/astrometry astrometry
-#RUN /usr/local/astrometry/bin/solve-field
 WORKDIR /webserver
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY server.py .
-RUN ls /usr/local/astrometry/bin/
-RUN head /usr/local/astrometry/bin/uniformize
-RUN /usr/local/bin/python -V
 CMD exec gunicorn --worker-tmp-dir /dev/shm --workers=2 --threads=4 --worker-class=gthread -b :8000 server:app

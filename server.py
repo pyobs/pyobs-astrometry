@@ -12,16 +12,6 @@ import json
 app = Flask(__name__)
 
 
-def send_error(error):
-    """Return JSON instead of HTML for HTTP errors."""
-    print("handler")
-    response = Response()
-    response.data = json.dumps({'error': error})
-    response.content_type = 'application/json'
-    response.status_code = 400
-    return response
-
-
 @app.route('/', methods=['POST'])
 def astrometry():
     # get JSON
@@ -29,7 +19,11 @@ def astrometry():
 
     # check request
     if 'ra' not in data or 'dec' not in data:
-        return send_error('Either RA or Dec not found in request.')
+        raise ValueError('Either RA or Dec not found in request.')
+    if 'scale_low' not in data or 'scale_high' not in data or data['scale_low'] > data['scale_high']:
+        raise ValueError('Invalid scales given.')
+    if 'nx' not in data or 'ny' not in data or data['nx'] <= 0 or data['ny'] <= 0:
+        raise ValueError('Invalid image size given.')
 
     # define command
     cmd = '--crpix-center --no-verify --no-tweak ' \
@@ -44,9 +38,9 @@ def astrometry():
     command = cmd.format(ra=data['ra'], dec=data['dec'], scale_low=data['scale_low'], scale_high=data['scale_high'],
                          nx=data['nx'], ny=data['ny'])
 
-    # solve-field executable
+    # solve-field executable and library path
     exec = '/usr/local/astrometry/bin/solve-field'
-    path = os.path.abspath(os.path.join(exec, '../../lib/python'))
+    path = '/usr/local/astrometry/lib/python'
 
     # create table
     tbl = Table([data['x'], data['y'], data['flux']], names=('x', 'y', 'flux'))
@@ -60,11 +54,11 @@ def astrometry():
         try:
             subprocess.check_output([exec] + shlex.split(command), cwd=tmpdir, env={'PYTHONPATH': path})
         except subprocess.CalledProcessError:
-            return send_error('Astrometry.net threw an error.')
+            raise ValueError('Astrometry.net threw an error.')
 
         # WCS file exists?
         if not os.path.exists(os.path.join(tmpdir, 'wcs.fits')):
-            return send_error('Could not find WCS file.')
+            raise ValueError('Could not find WCS file.')
 
         # open WCS file
         wcs_header = fits.getheader(os.path.join(tmpdir, 'wcs.fits'))
@@ -76,4 +70,13 @@ def astrometry():
     # define response
     response = Response(json.dumps(header))
     response.content_type = 'application/json'
+    return response
+
+
+@app.errorhandler(Exception)
+def handle_error(error):
+    response = Response()
+    response.data = json.dumps({'error': str(error)})
+    response.content_type = 'application/json'
+    response.status_code = 400
     return response

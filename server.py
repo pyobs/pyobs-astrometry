@@ -34,7 +34,7 @@ def astrometry():
 
     # some defaults
     if 'radius' not in data:
-        data['radius'] = 2
+        data['radius'] = 3
 
     # define command
     cmd = '--crpix-center --no-verify --no-tweak ' \

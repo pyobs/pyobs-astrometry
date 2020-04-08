@@ -32,9 +32,13 @@ def astrometry():
     if 'nx' not in data or 'ny' not in data or data['nx'] <= 0 or data['ny'] <= 0:
         raise ValueError('Invalid image size given.')
 
+    # some defaults
+    if 'radius' not in data:
+        data['radius'] = 2
+
     # define command
     cmd = '--crpix-center --no-verify --no-tweak ' \
-          ' --radius 2.0 --ra {ra} --dec {dec} --guess-scale ' \
+          ' --radius {radius} --ra {ra} --dec {dec} --guess-scale ' \
           '--scale-units arcsecperpix --scale-low {scale_low} --scale-high {scale_high} ' \
           '--no-plots -N none --no-remove-lines ' \
           '--code-tolerance 0.003 --pixel-error 1 -d 1-200 ' \
@@ -42,7 +46,8 @@ def astrometry():
           '-X X -Y Y -s FLUX --width {nx} --height {ny} cat.fits'
 
     # and format it
-    command = cmd.format(ra=data['ra'], dec=data['dec'], scale_low=data['scale_low'], scale_high=data['scale_high'],
+    command = cmd.format(radius=data['radius'], ra=data['ra'], dec=data['dec'],
+                         scale_low=data['scale_low'], scale_high=data['scale_high'],
                          nx=data['nx'], ny=data['ny'])
 
     # solve-field executable and library path

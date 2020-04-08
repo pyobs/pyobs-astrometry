@@ -7,15 +7,22 @@ from astropy.io.fits import table_to_hdu
 from flask import Flask, escape, request, Response
 from astropy.table import Table
 import json
+import logging
 
 
+# flask app
 app = Flask(__name__)
+
+# logger
+logging.basicConfig(format='%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d %(message)s', level=logging.INFO)
 
 
 @app.route('/', methods=['POST'])
 def astrometry():
+
     # get JSON
     data = request.get_json()
+    logging.info('New request: %s', data)
 
     # check request
     if 'ra' not in data or 'dec' not in data:
@@ -52,7 +59,10 @@ def astrometry():
 
         # run astrometry.net
         try:
-            subprocess.check_output([exec] + shlex.split(command), cwd=tmpdir, env={'PYTHONPATH': path})
+            out = subprocess.check_output([exec] + shlex.split(command), cwd=tmpdir, env={'PYTHONPATH': path})
+            logging.info('astrometry.net log:')
+            for line in out.decode('utf-8').split('\n'):
+                logging.info(line)
         except subprocess.CalledProcessError:
             raise ValueError('Astrometry.net threw an error.')
 
@@ -70,11 +80,13 @@ def astrometry():
     # define response
     response = Response(json.dumps(header))
     response.content_type = 'application/json'
+    logging.info('Finished.')
     return response
 
 
 @app.errorhandler(Exception)
 def handle_error(error):
+    logging.error('An exception has occured: %s', str(error))
     response = Response()
     response.data = json.dumps({'error': str(error)})
     response.content_type = 'application/json'

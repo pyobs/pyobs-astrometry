@@ -32,9 +32,26 @@ def astrometry():
     if 'nx' not in data or 'ny' not in data or data['nx'] <= 0 or data['ny'] <= 0:
         raise ValueError('Invalid image size given.')
 
-    # some defaults
-    if 'radius' not in data:
-        data['radius'] = 3
+    # coordinates and radius
+    ra = data['ra']
+    dec = data['dec']
+    radius = data['radius'] if 'radius' in data else 3.
+    coords = SkyCoord(ra=ra * u.deg, dec=dec * u.deg, frame='icrs')
+    log.info('Searching within radius of %.2g degrees around %s.', radius, str(coords))
+
+    # get scale and image size
+    scale_low = data['scale_low']
+    scale_high = data['scale_high']
+    log.info('Scale is given as %.2g <= scale <= %.2g.', scale_low, scale_high)
+    nx = data['nx']
+    ny = data['ny']
+    log.info('Image size is %dx%d.', nx, ny)
+
+    # get x and y coordinates and fluxes of sources
+    x = data['x']
+    y = data['y']
+    flux = data['flux']
+    log.info('Found %d sources.', len(x))
 
     # define command
     cmd = '--crpix-center --no-verify --no-tweak ' \
@@ -46,16 +63,14 @@ def astrometry():
           '-X X -Y Y -s FLUX --width {nx} --height {ny} cat.fits'
 
     # and format it
-    command = cmd.format(radius=data['radius'], ra=data['ra'], dec=data['dec'],
-                         scale_low=data['scale_low'], scale_high=data['scale_high'],
-                         nx=data['nx'], ny=data['ny'])
+    command = cmd.format(radius=radius, ra=ra, dec=dec, scale_low=scale_low, scale_high=scale_high, nx=nx, ny=ny)
 
     # solve-field executable and library path
     exec = '/usr/local/astrometry/bin/solve-field'
     path = '/usr/local/astrometry/lib/python'
 
     # create table
-    tbl = Table([data['x'], data['y'], data['flux']], names=('x', 'y', 'flux'))
+    tbl = Table([x, y, flux], names=('x', 'y', 'flux'))
 
     # create temp directory
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -81,6 +96,10 @@ def astrometry():
         # copy keywords
         keywords = ['CTYPE1', 'CTYPE2', 'CRPIX1', 'CRPIX2', 'CRVAL1', 'CRVAL2', 'CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']
         header = {k: wcs_header[k] for k in keywords}
+
+        # log
+        coords = SkyCoord(ra=wcs_header['CRVAL1'] * u.deg, dec=wcs_header['CRVAL2'] * u.deg, frame='icrs')
+        log.info('Found coordinates %s.', str(coords))
 
     # define response
     response = Response(json.dumps(header))

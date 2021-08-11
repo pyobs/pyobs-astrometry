@@ -6,6 +6,7 @@ from astropy.io import fits
 from astropy.io.fits import table_to_hdu
 from flask import Flask, escape, request, Response
 from astropy.table import Table
+from astropy.coordinates import SkyCoord
 import json
 import logging
 

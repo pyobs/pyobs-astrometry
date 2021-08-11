@@ -83,8 +83,8 @@ def astrometry():
             logging.info('astrometry.net log:')
             for line in out.decode('utf-8').split('\n'):
                 logging.info(line)
-        except subprocess.CalledProcessError:
-            raise ValueError('Astrometry.net threw an error.')
+        except subprocess.CalledProcessError as e:
+            raise ValueError('Astrometry.net threw an error: ' + e.output)
 
         # WCS file exists?
         if not os.path.exists(os.path.join(tmpdir, 'wcs.fits')):

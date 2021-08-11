@@ -39,21 +39,21 @@ def astrometry():
     dec = data['dec']
     radius = data['radius'] if 'radius' in data else 3.
     coords = SkyCoord(ra=ra * u.deg, dec=dec * u.deg, frame='icrs')
-    log.info('Searching within radius of %.2g degrees around %s.', radius, str(coords))
+    logging.info('Searching within radius of %.2g degrees around %s.', radius, str(coords))
 
     # get scale and image size
     scale_low = data['scale_low']
     scale_high = data['scale_high']
-    log.info('Scale is given as %.2g <= scale <= %.2g.', scale_low, scale_high)
+    logging.info('Scale is given as %.2g <= scale <= %.2g.', scale_low, scale_high)
     nx = data['nx']
     ny = data['ny']
-    log.info('Image size is %dx%d.', nx, ny)
+    logging.info('Image size is %dx%d.', nx, ny)
 
     # get x and y coordinates and fluxes of sources
     x = data['x']
     y = data['y']
     flux = data['flux']
-    log.info('Found %d sources.', len(x))
+    logging.info('Found %d sources.', len(x))
 
     # define command
     cmd = '--crpix-center --no-verify --no-tweak ' \
@@ -101,7 +101,7 @@ def astrometry():
 
         # log
         coords = SkyCoord(ra=wcs_header['CRVAL1'] * u.deg, dec=wcs_header['CRVAL2'] * u.deg, frame='icrs')
-        log.info('Found coordinates %s.', str(coords))
+        logging.info('Found coordinates %s.', str(coords))
 
     # define response
     response = Response(json.dumps(header))

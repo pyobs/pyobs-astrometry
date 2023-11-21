@@ -17,7 +17,7 @@ FROM debian:12.2-slim
 EXPOSE 8000
 
 RUN apt-get update && \
-    apt-get install -y python3-numpy python3-astropy python3-flask python3-gunicorn libcfitsio-bin \
+    apt-get install -y python3-numpy python3-astropy python3-flask gunicorn python3-gunicorn libcfitsio-bin \
                        python-is-python3 && \
     rm -rf /var/lib/apt/lists/* \
 

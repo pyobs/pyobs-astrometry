@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 from astropy.io import fits
 from astropy.io.fits import table_to_hdu
-from flask import Flask, escape, request, Response
+from flask import Flask, request, Response
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
 import astropy.units as u

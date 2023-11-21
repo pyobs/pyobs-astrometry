@@ -11,7 +11,7 @@ RUN wget http://astrometry.net/downloads/astrometry.net-latest.tar.gz
 RUN tar xvzf astrometry.net-latest.tar.gz
 RUN cd astrometry.net-* && make && make py && make extra && make install PYTHON_SCRIPT="/usr/local/bin/python"
 
-FROM python:3.7-slim
+FROM python:3.11-slim
 EXPOSE 8000
 RUN apt-get update \
   && apt-get install -y libcfitsio-bin \

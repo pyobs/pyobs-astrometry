@@ -16,13 +16,14 @@ RUN cd astrometry.net-* && make && make py && make extra && make install PYTHON_
 FROM debian:12.2-slim
 EXPOSE 8000
 
+WORKDIR /usr/local/
+COPY --from=builder /usr/local/astrometry astrometry
+RUN ls astrometry
+
 RUN apt-get update && \
     apt-get install -y python3-numpy python3-astropy python3-flask gunicorn python3-gunicorn libcfitsio-bin \
                        python-is-python3 && \
     rm -rf /var/lib/apt/lists/* \
-
-WORKDIR /usr/local/
-COPY --from=builder /usr/local/astrometry astrometry
 
 WORKDIR /webserver
 COPY server.py .

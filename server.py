@@ -56,16 +56,20 @@ def astrometry():
     logging.info('Found %d sources.', len(x))
 
     # define command
-    cmd = '--crpix-center --no-verify --no-tweak ' \
-          ' --radius {radius} --ra {ra} --dec {dec} --guess-scale ' \
-          '--scale-units arcsecperpix --scale-low {scale_low} --scale-high {scale_high} ' \
-          '--no-plots -N none --no-remove-lines ' \
-          '--code-tolerance 0.003 --pixel-error 1 -d 1-200 ' \
-          '--solved none --match none --rdls none --wcs wcs.fits --corr none --overwrite ' \
-          '-X X -Y Y -s FLUX --width {nx} --height {ny} cat.fits'
+    cmd = f"--crpix-center --no-verify --no-tweak " \
+          f" --radius {radius} --ra {ra} --dec {dec} --guess-scale " \
+          f"--scale-units arcsecperpix --scale-low {scale_low} --scale-high {scale_high} " \
+          f"--no-plots -N none --no-remove-lines " \
+          f"--code-tolerance 0.003 --pixel-error 1 -d 1-200 " \
+          f"--solved none --match none --rdls none --wcs wcs.fits --corr none --overwrite " \
+          f"-X X -Y Y -s FLUX --width {nx} --height {ny}"
 
-    # and format it
-    command = cmd.format(radius=radius, ra=ra, dec=dec, scale_low=scale_low, scale_high=scale_high, nx=nx, ny=ny)
+    # crpix?
+    if 'crpix-x' in data and 'crpix-y' in data:
+        cmd += f" --crpix-x {data['crpix-x']} --crpix-y {data['crpix-y']}"
+
+    # add catalog
+    cmd += " cat.fits"
 
     # solve-field executable and library path
     exec = '/usr/local/astrometry/bin/solve-field'

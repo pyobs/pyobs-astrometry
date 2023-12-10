@@ -70,6 +70,7 @@ def astrometry():
 
     # add catalog
     cmd += " cat.fits"
+    logging.info(cmd)
 
     # solve-field executable and library path
     exec = '/usr/local/astrometry/bin/solve-field'

@@ -85,7 +85,7 @@ def astrometry():
 
         # run astrometry.net
         try:
-            out = subprocess.check_output([exec] + shlex.split(command), cwd=tmpdir, env={'PYTHONPATH': path})
+            out = subprocess.check_output([exec] + shlex.split(cmd), cwd=tmpdir, env={'PYTHONPATH': path})
             logging.info('astrometry.net log:')
             for line in out.decode('utf-8').split('\n'):
                 logging.info(line)

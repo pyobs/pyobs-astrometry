@@ -1,0 +1,47 @@
+[project]
+name = "pyobs-astrometry"
+version = "1.0.0"
+description = "Web-service for solve-field from astrometry.net"
+readme = "README.md"
+authors = [{ name = "Tim-Oliver Husser", email = "thusser@uni-goettingen.de" }]
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+    "astropy>=7.0.1,<9",
+    "flask>=3.1.0,<4",
+    "gunicorn>=23.0.0,<24",
+    "numpy>=2.2.5,<3",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0,<27",
+    "pre-commit>=4.2.0,<5",
+    "ruff>=0.9.0",
+    "pyrefly>=1.1.1",
+]
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+include = ["pyobs_astrometry*"]
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "G"]
+
+[tool.pyrefly]
+python-version = "3.11"
+ignore-missing-imports = []
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

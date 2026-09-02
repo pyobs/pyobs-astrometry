@@ -1,6 +1,6 @@
 [project]
 name = "pyobs-astrometry"
-version = "1.0.0"
+version = "1.0.9"
 description = "Web-service for solve-field from astrometry.net"
 readme = "README.md"
 authors = [{ name = "Tim-Oliver Husser", email = "thusser@uni-goettingen.de" }]

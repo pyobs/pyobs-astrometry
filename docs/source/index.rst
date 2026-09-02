@@ -5,10 +5,12 @@ A web service wrapping `astrometry.net <http://astrometry.net/>`_'s ``solve-fiel
 POST a first-guess pointing plus a source list, get back the WCS FITS headers to plate-solve the
 original image. Inspired by LCO's `Banzai pipeline <https://github.com/LCOGT/banzai>`_.
 
-Unlike the rest of the pyobs-core fleet, this is a single Flask endpoint in one file
-(``server.py``) with no persistent state, no database, and no Python dependency management (apt
-packages inside the Docker image, not a ``pyproject.toml``/``uv.lock``) — one page covers it,
-there's nothing to split into installation/configuration/architecture pages.
+Unlike most of the pyobs-core fleet, this is a single Flask endpoint in one module
+(``pyobs_astrometry/server.py``) with no persistent state and no database — one page covers it,
+there's nothing to split into installation/configuration/architecture pages. Python dependencies
+(Flask, gunicorn, astropy, numpy) are tracked in ``pyproject.toml``/``uv.lock`` and installed with
+`uv <https://docs.astral.sh/uv/>`_ inside the Docker image; astrometry.net itself is still compiled
+from source and installed via apt packages in the build stage.
 
 
 Deploy

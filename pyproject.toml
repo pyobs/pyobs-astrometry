@@ -9,7 +9,7 @@ license = "MIT"
 dependencies = [
     "astropy>=7.0.1,<9",
     "flask>=3.1.0,<4",
-    "gunicorn>=23.0.0,<24",
+    "gunicorn>=23.0.0,<27",
     "numpy>=2.2.5,<3",
 ]
 
